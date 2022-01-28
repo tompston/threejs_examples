@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.0.7/dist/tweakpane.min.js"></script> -->
+    <title>Learning Three.js</title>
+  </head>
+  <body>
+    <!-- css imports -->
+    <script type="module" src="/src/assets.js"></script>
+    <script type="module">
+      import * as THREE from "three";
+      import * as i from "../src/reusable/init_world"; // extremely short, as we use this a lot
+      import { Pane } from "tweakpane";
+
+      const [container_name, canvas_name] = [".threejs_parent", ".scene_04"];
+      const container = document.querySelector(container_name);
+      const renderer = i.init_renderer(canvas_name);
+      renderer.physicallyCorrectLights = true;
+      const camera = i.init_camera(container.clientWidth, container.clientHeight);
+
+      // clock, controls, loeader and scene
+      const clock = new THREE.Clock();
+      const controls = i.init_controls(camera, renderer.domElement);
+      const loader = i.glb_loader();
+      const scene = new THREE.Scene();
+      const textureLoader = new THREE.TextureLoader();
+      const temp_grid = i.world_grid(scene, 20, 20); // add temporary grid, cube and light
+
+      scene.background = new THREE.Color(0xffffff);
+
+      // --------------------------------- https://cocopon.github.io/tweakpane/
+
+      // const pane = new Tweakpane.Pane(); // cdn
+      const pane = new Pane();
+      const PARAMS = {}; // empty object to which we will append the tweakable params
+
+      const model_dir = pane.addFolder({ title: "GLB Model", expanded: false });
+      const light_dir = pane.addFolder({ title: "Light", expanded: false });
+
+      pane.addButton({ title: "Export" }).on("click", function () {
+        console.log(pane.exportPreset());
+      });
+
+      const model_params = {
+        model_path: "/assets/models/mercor.glb",
+        model_x: 2,
+        model_y: 0,
+        model_z: 0,
+        model_color: "#ffffff",
+        model_metalness: 0.87,
+        model_roughness: 0,
+        model_wireframe: false,
+        model_transparent: true,
+        model_opacity: 1,
+        model_visible: true,
+      };
+      Object.assign(PARAMS, model_params);
+
+      const light_params = {
+        light_x: 8,
+        light_y: 3,
+        light_z: 3,
+        light_color: "#193619",
+        light_intensity: 122,
+        light_angle: 1,
+      };
+      Object.assign(PARAMS, light_params);
+
+      // ---------------------------------
+
+      const lightsource = new THREE.SpotLight(light_params.light_color, light_params.light_intensity, 0);
+      lightsource.position.set(light_params.light_x, light_params.light_y, light_params.light_z);
+      lightsource.angle = light_params.light_angle;
+      lightsource.castShadow = true;
+      scene.add(lightsource);
+
+      // -- show the wireframe for the light.
+      // scene.add(new THREE.SpotLightHelper(lightsource));
+
+      let mixer;
+      let model;
+
+      i.pane_axis(light_dir, PARAMS, "light", lightsource, -50, 50, 1);
+      i.pane_color(light_dir, PARAMS, "light_color", lightsource);
+
+      light_dir
+        .addInput(PARAMS, "light_angle", { min: 0, max: 1, step: 0.01 })
+        .on("change", function (new_val) {
+          lightsource.angle = new_val.value;
+        });
+
+      light_dir
+        .addInput(PARAMS, "light_intensity", { min: 0, max: 400, step: 1 })
+        .on("change", function (new_val) {
+          lightsource.intensity = new_val.value;
+        });
+      // -------------------------------------------------------
+
+      loader.load(
+        model_params.model_path,
+        function (gltf) {
+          let model = gltf.scene;
+          const SCALE = 1.4;
+          model.scale.set(SCALE, SCALE, SCALE);
+          model.castShadow = true;
+          model.position.set(2, 0, 0);
+
+          mixer = new THREE.AnimationMixer(model);
+          scene.add(model);
+
+          model.traverse((obj) => {
+            let mat = obj.material; // shorten
+
+            if (obj.isMesh) {
+              mat.color.set(model_params.model_color);
+              mat.metalness = model_params.model_metalness;
+              mat.roughness = model_params.model_roughness;
+              mat.wireframe = model_params.model_wireframe;
+              mat.transparent = model_params.model_transparent;
+              mat.opacity = model_params.model_opacity;
+              mat.visible = model_params.model_visible;
+              mat.receiveShadow = true;
+
+              model_dir
+                .addInput(PARAMS, "model_metalness", { min: 0, max: 1, step: 0.01 })
+                .on("change", function (new_val) {
+                  mat.metalness = new_val.value;
+                });
+              model_dir
+                .addInput(PARAMS, "model_roughness", { min: 0, max: 1, step: 0.01 })
+                .on("change", function (new_val) {
+                  mat.roughness = new_val.value;
+                });
+              model_dir
+                .addInput(PARAMS, "model_opacity", { min: 0, max: 1, step: 0.01 })
+                .on("change", function (new_val) {
+                  mat.opacity = new_val.value;
+                });
+              i.pane_color(model_dir, PARAMS, "model_color", mat);
+            }
+          });
+        },
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+        },
+        function (e) {
+          console.error(e);
+        },
+      );
+
+      function render() {
+        // console.log(clock.getElapsedTime())  // get the time
+        renderer.render(scene, camera);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        i.resizeCanvasToDisplaySize(camera, renderer);
+        controls.update();
+        render();
+      }
+
+      animate();
+    </script>
+
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid scene_grids gap-30 pb-80">
+          <!-- scene 03 -->
+          <div class="threejs_parent single_preview_parent">
+            <div class="scene_name single_preview_name">05</div>
+            <div class="grid"><canvas class="scene_04 threejs_canvas single_preview_canvas"></canvas></div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

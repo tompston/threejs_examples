@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Three.js</title>
+  </head>
+  <body>
+    <!-- css imports -->
+    <script type="module" src="/src/assets.js"></script>
+    <script type="module">
+      import * as THREE from "three";
+      import * as i from "../src/reusable/init_world";
+
+      import { shader_01 } from "../src/scenes/scene_03/shader_01";
+      import { shader_02 } from "../src/scenes/scene_03/shader_02";
+      import { shader_03 } from "../src/scenes/scene_03/shader_03";
+
+      const [container_name, canvas_name] = [".threejs_parent", ".scene_03"];
+      const container = document.querySelector(container_name);
+
+      // renderer and camera
+      const renderer = i.init_renderer(canvas_name);
+      const camera = i.init_camera(container.clientWidth, container.clientHeight);
+      camera.position.set(9, 3, 20);
+
+      // clock, controls, loeader and scene
+      const clock = new THREE.Clock();
+      const controls = i.init_controls(camera, renderer.domElement);
+      const loader = i.glb_loader();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      // add temporary grid, cube and light
+      let temp_grid = i.world_grid(scene, 20, 20);
+
+      const scale = 2.5;
+
+      // const geometry = new THREE.PlaneGeometry(6, 6, 16, 16);
+      const geometry = new THREE.TorusGeometry(1 * scale, 0.5 * scale, 40, 40);
+
+      const donut_01 = i.add_mesh(scene, geometry, shader_01, 12, 0, 0);
+      const donut_02 = i.add_mesh(scene, geometry, shader_02, 0, 0, 22);
+      const donut_03 = i.add_mesh(scene, geometry, shader_03, 0, 0, 0);
+
+      function render() {
+        donut_01.material.uniforms.u_time.value = clock.getElapsedTime();
+        donut_02.material.uniforms.u_time.value = clock.getElapsedTime() * 3;
+        donut_03.material.uniforms.u_time.value = clock.getElapsedTime() * 2;
+
+        renderer.render(scene, camera);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        i.resizeCanvasToDisplaySize(camera, renderer);
+        controls.update();
+        render();
+      }
+
+      animate();
+    </script>
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid scene_grids gap-30 pb-80">
+          <!-- scene 03 -->
+          <div class="threejs_parent single_preview_parent">
+            <div class="scene_name single_preview_name">03</div>
+            <div class="grid">
+              <canvas class="scene_03 threejs_canvas single_preview_canvas"></canvas>
+            </div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--  -->
+    <meta name="description" content="Learning Three.js. Interactive Three.js examples" />
+    <!-- <link rel="canonical" href="http://mercor.lv/" /> -->
+    <title>Learning Three.js</title>
+    <!-- og  -->
+    <meta property="og:description" content="Learning Three.js. Interactive Three.js examples" />
+    <meta property="og:title" content="Learning Three.js" />
+    <meta property="og:type" content="website" />
+    <!-- <meta property="og:url" content="http://mercor.lv/" /> -->
+    <meta property="og:site_name" content="Learning Three.js" />
+    <!-- link to the public img -->
+    <meta property="og:image" content="/favicon.ico" />
+    <meta property="og:image:width" content="50" />
+    <meta property="og:image:height" content="50" />
+  </head>
+  <body>
+    <div class="flex-center">
+      <div class="max-width-1 mt-50 mb-50">
+        <div class="fs-3 font-fam-2">Learning Three.js</div>
+        <div class="font-fam-4">
+          <div class="flex homepage_links_grid gap-30 mt-20 mb-16">
+            <div>
+              <a href="" rel="noreferrer" target="_blank" class="remove-decoration homepage_link"
+                >Source Code</a
+              >
+            </div>
+            <div>
+              <a
+                href="https://tompston.pages.dev/"
+                rel="noreferrer"
+                target="_blank"
+                class="remove-decoration homepage_link"
+                >Homepage</a
+              >
+            </div>
+          </div>
+          <div class="text-2">
+            Some examples of three.js I'm making, while learning. The index of the example shows in which page
+            the example is. To find the source code of the example, just find the html file that has the same
+            index in the
+            <code class="">/examples</code> dir
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid gap-34 home_links_grid"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/assets.js"></script>
+    <script>
+      let home_links_grid = document.querySelector(".home_links_grid");
+
+      let links = [
+        ["01", "baseline for everything"],
+        ["02", "writing GLSL shaders"],
+        ["03", "wrapping assets around the mesh with shaders"],
+        ["04", "matcaps and bump maps on meshes"],
+        ["05", "Importing glb / gltf models + changing values with tweakpane"],
+      ];
+
+      for (let i = 0; i < links.length; i++) {
+        let example_link = links[i][0];
+        let example_label = links[i][1];
+
+        home_links_grid.innerHTML += `
+        <div class="grid example_link_grid text-3">
+            <div><span class="flex-center example_index disable-text-select font-fam-3">${example_link}</span></div>
+            <div><a class="example_label font-fam-2 fs-8" href="/examples/${example_link}.html">${example_label}</a></div>
+        </div>
+        `;
+      }
+    </script>
+  </body>
+</html>

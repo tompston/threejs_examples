@@ -1,0 +1,47 @@
+
+
+-- HTML 
+ 
+<div class="flex-center">
+    <div class="max-width-1">
+    <div class="grid scene_grids gap-30 pb-80">
+
+        <!-- scene 01 -->
+        <div class="threejs_parent">
+        <div class="scene_name">scene 01 - baseline for everything</div>
+        <div class="grid"><canvas class="scene_01 threejs_canvas"></canvas></div>
+        </div>
+        <!-- -->
+
+    </div>
+    </div>
+</div>
+
+
+-- CSS
+
+canvas {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
+.threejs_parent {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
+
+  /* min-height: 500px; */
+  gap: 20px;
+}
+/* baseline for the canvas */
+.threejs_canvas {
+  height: 100%;
+  height: 300px;
+}
+
+@media screen and (max-width: 600px) {
+  .threejs_parent {
+    grid-template-columns:auto;
+    grid-template-rows: auto 300px;
+    gap: 20px;
+  }
+}

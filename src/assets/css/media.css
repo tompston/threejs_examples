@@ -1,0 +1,6 @@
+@media screen and (max-width: 600px) {
+    .threejs_parent {
+      grid-template-columns: auto;
+    }
+  }
+  

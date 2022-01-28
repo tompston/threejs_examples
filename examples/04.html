@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Three.js</title>
+  </head>
+  <body>
+    <!-- css imports -->
+    <script type="module" src="/src/assets.js"></script>
+    <script type="module">
+      import * as THREE from "three";
+      import * as i from "../src/reusable/init_world";
+      import * as shaders from "../src/shaders/shaders";
+
+      // import materials
+      import example_matcap from "/assets/matcap/paper.png";
+      import example_displacement from "/assets/displacement/us.png";
+      import example_normal from "/assets/normals/normal_map.jpg";
+
+      const [container_name, canvas_name] = [".threejs_parent", ".scene_04"];
+      const container = document.querySelector(container_name);
+
+      // renderer and camera
+      const renderer = i.init_renderer(canvas_name);
+      const camera = i.init_camera(container.clientWidth, container.clientHeight);
+
+      // clock, controls, loeader and scene
+      const clock = new THREE.Clock();
+      const controls = i.init_controls(camera, renderer.domElement);
+      const loader = i.glb_loader();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      // add temporary grid, cube and light
+      let temp_grid = i.world_grid(scene, 30, 20);
+
+      // load the texture with this
+      const textureLoader = new THREE.TextureLoader();
+
+      // load the imported pics with textureLoader
+      const matcap_1 = textureLoader.load(example_matcap);
+      const displacement_1 = textureLoader.load(example_displacement);
+      const normal_1 = textureLoader.load(example_normal);
+
+      // https://threejs.org/docs/?q=MeshMatcapMaterial#api/en/materials/MeshMatcapMaterial.displacementMap
+
+      // only matcap applied
+      const material_1 = new THREE.MeshMatcapMaterial({
+        matcap: matcap_1,
+      });
+
+      // displacement + matcap + normalMap
+      const material_2 = new THREE.MeshMatcapMaterial({
+        matcap: matcap_1,
+        bumpMap: normal_1,
+        bumpScale: 0.1,
+        //   displacementMap: normal_1,
+        //   displacementScale: 0.1,
+        // displacementMap: displacement_1,
+        //   normalMap: normal_1,
+        //   normalScale: new THREE.Vector2(1, 2),
+        // normalMapType: 0, // 2 options ( 0 | 1 )
+      });
+
+      const row_1 = -8;
+      const row_2 = 0;
+      const quality = 60;
+
+      const scale = 2;
+      const geometry_torus = new THREE.TorusGeometry(0.9 * scale, 0.5 * scale, quality, quality);
+      const geometry_box = new THREE.BoxGeometry(scale * 2, scale * 2, scale * 2);
+      const geometry_sphere = new THREE.SphereGeometry(2.3, quality, quality);
+      const geometry_plane = new THREE.PlaneGeometry(6, 6, 8, 8);
+
+      // only matcap
+      const material_1_torus = i.add_mesh(scene, geometry_torus, material_1, 0, 0, row_1);
+      const material_1_box = i.add_mesh(scene, geometry_box, material_1, -6, 0, row_1);
+      const material_1_sphere = i.add_mesh(scene, geometry_sphere, material_1, 6, 0, row_1);
+      const material_1_plane = i.add_mesh(scene, geometry_plane, material_1, -12, 0, row_1);
+
+      // matcap + normal + displacement
+      const material_2_torus = i.add_mesh(scene, geometry_torus, material_2, 0, 0, row_2);
+      const material_2_box = i.add_mesh(scene, geometry_box, material_2, -6, 0, row_2);
+      const material_2_sphere = i.add_mesh(scene, geometry_sphere, material_2, 6, 0, row_2);
+      const material_2_plane = i.add_mesh(scene, geometry_plane, material_2, -12, 0, row_2);
+
+      function render() {
+        renderer.render(scene, camera);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        i.resizeCanvasToDisplaySize(camera, renderer);
+        controls.update();
+        render();
+      }
+
+      animate();
+    </script>
+
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid scene_grids gap-30 pb-80">
+          <!-- scene 03 -->
+          <div class="threejs_parent single_preview_parent">
+            <div class="scene_name single_preview_name">04</div>
+            <div class="grid">
+              <canvas class="scene_04 threejs_canvas single_preview_canvas"></canvas>
+            </div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

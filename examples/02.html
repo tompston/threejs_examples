@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Three.js</title>
+  </head>
+  <body>
+    <!-- css imports -->
+    <script type="module" src="/src/assets.js"></script>
+
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid scene_grids gap-30 pb-80">
+          <!-- scene 02 -->
+          <div class="threejs_parent single_preview_parent">
+            <div class="scene_name single_preview_name">02</div>
+            <div class="grid"><canvas class="scene_02 threejs_canvas single_preview_canvas"></canvas></div>
+            <div class="grid references_grid"></div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      import * as THREE from "three";
+      import * as i from "../src/reusable/init_world";
+      import * as shaders from "../src/shaders/shaders";
+      import { append_reference_grid } from "../src/reusable/components"; // extremely short, as we use this a lot
+
+      // get the thing
+      const [container_name, canvas_name] = [".threejs_parent", ".scene_02"];
+      const container = document.querySelector(container_name);
+
+      const clock = new THREE.Clock();
+      const renderer = i.init_renderer(canvas_name);
+      const camera = i.init_camera(container.clientWidth, container.clientHeight);
+
+      const controls = i.init_controls(camera, renderer.domElement);
+      const loader = i.glb_loader();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      let temp_grid = i.world_grid(scene, 20, 20);
+
+      const cube_dim = 1.5;
+      const box_geometry = new THREE.BoxGeometry(cube_dim, cube_dim, cube_dim);
+      const plane_geometry = new THREE.PlaneBufferGeometry(7, 7, 20, 20);
+      const first_row = 6;
+
+      let cube_1 = i.add_mesh(scene, box_geometry, shaders.shader_01, -8, 0, first_row);
+      let cube_2 = i.add_mesh(scene, box_geometry, shaders.shader_02, -6, 0, first_row);
+      let cube_3 = i.add_mesh(scene, box_geometry, shaders.shader_03, -4, 0, first_row);
+      let cube_4 = i.add_mesh(scene, box_geometry, shaders.shader_04, -2, 0, first_row);
+      let cube_5 = i.add_mesh(scene, box_geometry, shaders.shader_05, 0, 0, first_row);
+      let cube_6 = i.add_mesh(scene, box_geometry, shaders.shader_06, 2, 0, first_row);
+      let cube_7 = i.add_mesh(scene, box_geometry, shaders.shader_07, 4, 0, first_row);
+      let cube_8 = i.add_mesh(scene, box_geometry, shaders.shader_08, 6, 0, first_row);
+      let cube_9 = i.add_mesh(scene, box_geometry, shaders.shader_08, 8, 0, first_row);
+      let cube_x = i.add_mesh(scene, plane_geometry, shaders.shader_10, 0, 0, 0);
+
+      // convert this to be a function
+      document.onmousemove = function (e) {
+        cube_x.material.uniforms.u_mouse.value.x = e.pageX;
+        cube_x.material.uniforms.u_mouse.value.y = e.pageY;
+        // console.log(e.pageX)
+      };
+
+      function render() {
+        // get the uniform value and update it
+        cube_3.material.uniforms.u_time.value = clock.getElapsedTime();
+        cube_4.material.uniforms.u_time.value = clock.getElapsedTime();
+        cube_6.material.uniforms.u_time.value = clock.getElapsedTime() * 30;
+        cube_x.material.uniforms.u_time.value = clock.getElapsedTime() * 30;
+
+        renderer.render(scene, camera);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        i.resizeCanvasToDisplaySize(camera, renderer);
+
+        controls.update();
+        render();
+      }
+
+      animate();
+
+      // append this to threejs_parent
+      // <div class="grid references_grid"></div>
+      let references = ["https://codesandbox.io/s/the-wall-of-shaders-0ic8i"];
+      append_reference_grid(references);
+    </script>
+  </body>
+</html>

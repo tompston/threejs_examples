@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Three.js</title>
+  </head>
+  <body>
+    <!-- css imports -->
+    <script type="module" src="/src/assets.js"></script>
+    <script type="module">
+      import * as THREE from "three";
+      import * as i from "../src/reusable/init_world";
+
+      const [container_name, canvas_name] = [".threejs_parent", ".scene_01"];
+      const container = document.querySelector(container_name);
+
+      // renderer and camera
+      const renderer = i.init_renderer(canvas_name);
+      const camera = i.init_camera(container.clientWidth, container.clientHeight);
+
+      // clock, controls, loeader and scene
+      const clock = new THREE.Clock();
+      const controls = i.init_controls(camera, renderer.domElement);
+      const loader = i.glb_loader();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      // add temporary grid, cube and light
+      let temp_grid = i.world_grid(scene, 20, 20);
+      let temp_cube = i.init_cube(scene);
+      let temp_light = i.init_lighsource(scene);
+
+      function init() {}
+
+      function render() {
+        // console.log(clock.getElapsedTime())  // get the time
+        renderer.render(scene, camera);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        i.resizeCanvasToDisplaySize(camera, renderer);
+        controls.update();
+        render();
+      }
+
+      init();
+      animate();
+    </script>
+
+    <div class="flex-center">
+      <div class="max-width-1">
+        <div class="grid scene_grids gap-30 pb-80">
+          <!-- scene 01 -->
+          <div class="threejs_parent single_preview_parent">
+            <div class="scene_name single_preview_name">01</div>
+            <div class="grid">
+              <canvas class="scene_01 threejs_canvas single_preview_canvas"></canvas>
+            </div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
