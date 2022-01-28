@@ -1,8 +1,11 @@
 # Learning Three.js
 
-Examples for three.js
+## [Live Version](https://threejs-examples.pages.dev/)
+
+
 
 ```
+# local install 
 npm i
 npm run dev
 ```
@@ -89,10 +92,8 @@ cd  gh-pages
 
 npm run build
 
-
 git branch gh-pages         # create branch 
 git branch -d gh-pages      # delete create
-
 
 
 -->
