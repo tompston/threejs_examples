@@ -83,4 +83,16 @@ y = mod(x,0.5); // return x modulo of 0.5
     </div>
 </div>
 
+
+git worktree add gh-pages
+cd  gh-pages
+
+npm run build
+
+
+git branch gh-pages         # create branch 
+git branch -d gh-pages      # delete create
+
+
+
 -->
